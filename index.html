@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/konva@9.3.0/konva.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.2.0/css/bootstrap-colorpicker.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.2.0/js/bootstrap-colorpicker.min.js"></script>
+
+    <title>Drawing Dashboard</title>
+</head>
+<style>
+    body {
+  /* overflow-y: hidden; Hide vertical scrollbar */
+  overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+
+/* Custom CSS for the toolbox and vertical line */
+#toolbox-container {
+    height: 100vh; /* Full height of the viewport */
+    position: sticky;
+    top: 0; /* Stick to the top */
+    overflow-y: auto; /* Add scroll if toolbox content exceeds the viewport height */
+}
+
+#toolbox {
+    padding: 10px; /* Add some padding for the toolbox content */
+}
+
+.border-right {
+    border-right: 1px solid #ddd; /* Vertical line color */
+    height: 100vh; /* Full height of the viewport */
+}
+
+
+#container {
+        width: 80%; /* Set the desired width */
+        height: 80vh; /* Set the desired height */
+        border: 2px solid #ddd; /* Add a border */
+        margin: auto; /* Center the container horizontally */
+        display: flex;
+        margin-top: 10px;
+        justify-content: center;
+        align-items: center;
+    }
+
+</style>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">Drawing Dashboard</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Toolbox on the left side -->
+            <div class="bg-light" id="toolbox">
+                <h4 class="text-center py-3">Toolbox</h4>
+                <!-- Add your toolbox items or controls here -->
+                <button class="btn btn-primary btn-sm btn-block mb-2">Pen</button>
+                <div class="dropdown mb-2">
+                    <button class="btn btn-secondary btn-sm btn-block dropdown-toggle" type="button" id="colorPickerButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Color
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="colorPickerButton">
+                        <div id="colorPicker"></div>
+                    </div>
+                </div>  
+                
+                <!-- Eraser button -->
+                <div class="mb-2">
+                    <button class="btn btn-danger btn-sm btn-block" onclick="clearCanvas()">Eraser</button>
+                </div>
+                <!-- Line width dropdown button -->
+                <div class="dropdown mb-2">
+                    <button class="btn btn-secondary btn-sm btn-block dropdown-toggle" type="button" id="lineWidthButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Line Width
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="lineWidthButton">
+                        <!-- Custom line width input field -->
+                        <div class="dropdown-item px-2">
+                            <input type="number" id="customLineWidthInput" class="form-control form-control-sm" placeholder="Custom Width">
+                            <button class="btn btn-primary btn-sm mt-2" onclick="setCustomLineWidth()">Set</button>
+                        </div>
+                    </div>
+                </div>
+
+
+               <!-- Line Style dropdown button -->
+               <div class="dropdown mb-2">
+                <button class="btn btn-secondary btn-sm btn-block dropdown-toggle" type="button" id="lineStyleButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Line Style
+                </button>
+                <div class="dropdown-menu" aria-labelledby="lineStyleButton">
+                    <button id="solidLineButton" class="dropdown-item" type="button">Solid</button>
+                    <button id="dottedLineButton" class="dropdown-item" type="button">Dotted</button>
+                    <button id="dashedLineButton" class="dropdown-item" type="button">Dashed</button>
+                    <button id="dashDotLineButton" class="dropdown-item" type="button">Dash-Dot</button>
+                   
+                </div>
+            </div>
+
+                <!-- Upload picture button -->
+            <div class="mb-2">
+                <input type="file" id="uploadPictureInput" accept=".jpg, .png" class="d-none">
+                <button class="btn btn-secondary btn-sm btn-block" onclick="document.getElementById('uploadPictureInput').click()">Upload Picture</button>
+            </div>
+
+
+            
+<!-- Shape dropdown button -->
+<div class="dropdown mb-2">
+    <button class="btn btn-secondary btn-sm btn-block dropdown-toggle" type="button" id="shapeButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Shape
+    </button>
+    <div class="dropdown-menu" aria-labelledby="shapeButton">
+        <button id="circleButton" class="dropdown-item" type="button">Circle</button>
+        <button id="triangleButton" class="dropdown-item" type="button">Triangle</button>
+        <button id="squareButton" class="dropdown-item" type="button">Square</button>
+        <button id="lineButton" class="dropdown-item" type="button">Line</button>
+        <button id="starButton" class="dropdown-item" type="button">Star</button>
+        <button id="hexagonButton" class="dropdown-item" type="button">Hexagon</button>
+    </div>
+</div>
+
+
+<!-- Shape dropdown button -->
+<div class="dropdown mb-2">
+    <button class="btn btn-secondary btn-sm btn-block dropdown-toggle" type="button" id="shapeButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Arrow
+    </button>
+    <div class="dropdown-menu" aria-labelledby="shapeButton">
+        <!-- Arrows -->
+        <button class="dropdown-item" type="button">&#8592; Left</button>
+        <button class="dropdown-item" type="button">&#8593; Up</button>
+        <button class="dropdown-item" type="button">&#8594; Right</button>
+        <button class="dropdown-item" type="button">&#8595; Down</button>
+    </div>
+</div>
+
+
+     
+                
+                <!-- ... other toolbox items -->
+            </div>
+
+            <!-- Main content on the right side -->
+            <div class="col-md-9" id="container"></div>
+        </div>
+    </div>
+    <footer class="bg-dark text-white py-1 mt-4">
+        <div class="container-fluid text-center"> <!-- Changed container to container-fluid -->
+            <p>Footer Content</p>
+        </div>
+    </footer>
+
+  <!-- ... (rest of your HTML code) -->
+
+<script>
+    var isDrawing = false;
+    var currentMode = 'pen';
+    var lastLine;
+    var currentLineWidth = 5; // Default line width
+
+    var lastLineStyle = 'solid'; // Default line style
+
+
+function setCustomLineWidth() {
+    var customWidth = document.getElementById('customLineWidthInput').value;
+    if (customWidth) {
+        currentLineWidth = customWidth; // Update the current line width
+    }
+}
+
+function clearCanvas() {
+    layer.destroyChildren();  // Assuming 'layer' is your Konva.Layer instance
+    layer.batchDraw();
+}
+
+
+function setLineStyle(style) {
+    lastLineStyle = style;
+    if (lastLine) {
+        switch (style) {
+            case 'solid':
+                lastLine.dash([]);
+                break;
+            case 'dotted':
+                lastLine.dash([5, 5]);
+                break;
+            case 'dashed':
+                lastLine.dash([10, 5]);
+                break;
+            case 'dash-dot':
+                lastLine.dash([10, 5, 2, 5]);
+                break;
+           
+        }
+        layer.batchDraw();
+    }
+}
+
+
+
+
+
+
+   
+
+
+    function setCustomLineWidth() {
+        var customWidth = document.getElementById('customLineWidthInput').value;
+        if (customWidth) {
+            currentLineWidth = customWidth; // Update the current line width
+        }
+    }
+
+
+    
+
+
+    $(document).ready(function() {
+        // Initialize the color picker
+        $('#colorPicker').colorpicker({
+            format: 'hex',
+            color: '#000000', // Default color
+            container: true,
+            inline: true,
+            sliders: {
+                saturation: {
+                    maxLeft: 200,
+                    maxTop: 200
+                },
+                hue: {
+                    maxTop: 200
+                },
+                alpha: {
+                    maxTop: 200
+                }
+            }
+        }).on('colorpickerChange', function(event) {
+            // Handle color change event
+            var color = event.color.toString('hex');
+            // Update the button text with the selected color
+            $('#colorPickerButton').css('background-color', color);
+        });
+
+
+
+            // Add event listeners for toolbox items
+        $('#toolbox button').click(function() {
+            // Update the current mode based on the clicked button
+            currentMode = $(this).text().trim().toLowerCase();
+
+            // If the selected mode is not 'pen', disable drawing
+            if (currentMode !== 'pen') {
+                isDrawing = false;
+            }
+        });
+
+
+
+       
+
+        // Add event listeners for drawing
+        stage.on('mousedown touchstart', function(e) {
+            if (currentMode !== 'pen') {
+                    return;
+                }
+            isDrawing = true;
+            var pos = stage.getPointerPosition();
+            lastLine = new Konva.Line({
+                stroke: $('#colorPickerButton').css('background-color'),
+                strokeWidth: currentLineWidth, // Use the current line width
+                globalCompositeOperation: 'source-over',
+                points: [pos.x, pos.y]
+            });
+            layer.add(lastLine);
+        });
+
+        stage.on('mousemove touchmove', function() {
+            if (!isDrawing || currentMode !== 'pen') {
+                return;
+            }
+            var pos = stage.getPointerPosition();
+            var newPoints = lastLine.points().concat([pos.x, pos.y]);
+            lastLine.points(newPoints);
+            layer.batchDraw();
+        });
+
+        stage.on('mouseup touchend', function() {
+            if (currentMode !== 'pen') {
+                return;
+            }
+            isDrawing = false;
+        });
+
+        stage.on('mouseleave', function() {
+            isDrawing = false;
+        });
+
+        // Add event listener for the input field to update the line width dynamically
+        $('#customLineWidthInput').on('input', function() {
+            setCustomLineWidth();
+        });
+            // Add event listeners for line style selection
+    $('#solidLineButton').click(function() {
+        setLineStyle('solid');
+    });
+
+    $('#dottedLineButton').click(function() {
+        setLineStyle('dotted');
+    });
+
+    $('#dashedLineButton').click(function() {
+        setLineStyle('dashed');
+    });
+
+    $('#dashDotLineButton').click(function() {
+        setLineStyle('dash-dot');
+    });
+
+        });
+
+
+        function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) {
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+            layer.destroyChildren();
+
+            var konvaImage = new Konva.Image({
+                x: 0,
+                y: 0,
+                image: img,
+                width: 400,
+                height: 400,
+                draggable: true  // Make the image draggable
+            });
+
+            layer.add(konvaImage);
+
+            var tr = new Konva.Transformer({
+                nodes: [konvaImage],
+                enabledAnchors: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
+                boundBoxFunc: function(oldBox, newBox) {
+                    if (newBox.width < 50 || newBox.height < 50) {
+                        return oldBox;
+                    }
+                    return newBox;
+                }
+            });
+
+            layer.add(tr);
+            layer.batchDraw();
+        };
+        img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+$(document).ready(function() {
+    $('#uploadPictureInput').on('change', handleImageUpload);
+});
+
+
+//////////////////// shapes //////////////
+
+$('#circleButton').click(function() {
+    drawShape('circle');
+});
+
+$('#triangleButton').click(function() {
+    drawShape('triangle');
+});
+
+$('#squareButton').click(function() {
+    drawShape('square');
+});
+
+$('#lineButton').click(function() {
+    drawShape('line');
+});
+
+$('#starButton').click(function() {
+    drawShape('star');
+});
+
+$('#hexagonButton').click(function() {
+    drawShape('hexagon');
+});
+
+function drawShape(shape) {
+    // Create a new shape based on the selected type
+    let newShape;
+
+    switch (shape) {
+        case 'circle':
+            newShape = new Konva.Circle({
+                x: stage.width() / 2,
+                y: stage.height() / 2,
+                radius: 50,
+                stroke: 'black',
+                strokeWidth: 2,
+                draggable: true,
+                boundBoxFunc: function(oldBox, newBox) {
+                    return {
+                        ...newBox,
+                        width: Math.max(2 * newBox.width, 50),
+                        height: Math.max(2 * newBox.height, 50)
+                    };
+                }
+            });
+            break;
+
+        case 'triangle':
+            newShape = new Konva.RegularPolygon({
+                x: stage.width() / 2,
+                y: stage.height() / 2,
+                sides: 3,
+                radius: 50,
+                stroke: 'black',
+                strokeWidth: 2,
+                draggable: true,
+                boundBoxFunc: function(oldBox, newBox) {
+                    return {
+                        ...newBox,
+                        width: Math.max(2 * newBox.width, 50),
+                        height: Math.max(2 * newBox.height, 50)
+                    };
+                }
+            });
+            break;
+
+        case 'square':
+            newShape = new Konva.Rect({
+                x: stage.width() / 2 - 50,
+                y: stage.height() / 2 - 50,
+                width: 100,
+                height: 100,
+                stroke: 'black',
+                strokeWidth: 2,
+                draggable: true,
+                boundBoxFunc: function(oldBox, newBox) {
+                    return {
+                        ...newBox,
+                        width: Math.max(newBox.width, 50),
+                        height: Math.max(newBox.height, 50)
+                    };
+                }
+            });
+            break;
+
+        case 'line':
+            newShape = new Konva.Line({
+                points: [50, 50, 200, 50],
+                stroke: 'black',
+                strokeWidth: 4,
+                lineCap: 'round',
+                lineJoin: 'round',
+                draggable: true,
+                boundBoxFunc: function(oldBox, newBox) {
+                    return {
+                        ...newBox,
+                        width: newBox.width,
+                        height: newBox.height
+                    };
+                }
+            });
+            break;
+
+        case 'star':
+            newShape = new Konva.Star({
+                x: stage.width() / 2,
+                y: stage.height() / 2,
+                numPoints: 5,
+                innerRadius: 40,
+                outerRadius: 70,
+                stroke: 'black',
+                strokeWidth: 2,
+                draggable: true,
+                boundBoxFunc: function(oldBox, newBox) {
+                    return {
+                        ...newBox,
+                        width: Math.max(2 * newBox.width, 70),
+                        height: Math.max(2 * newBox.height, 70)
+                    };
+                }
+            });
+            break;
+
+        case 'hexagon':
+            newShape = new Konva.RegularPolygon({
+                x: stage.width() / 2,
+                y: stage.height() / 2,
+                sides: 6,
+                radius: 60,
+                stroke: 'black',
+                strokeWidth: 2,
+                draggable: true,
+                boundBoxFunc: function(oldBox, newBox) {
+                    return {
+                        ...newBox,
+                        width: Math.max(2 * newBox.width, 120),
+                        height: Math.max(2 * newBox.height, 104)
+                    };
+                }
+            });
+            break;
+
+        default:
+            console.error('Invalid shape type');
+            return;
+    }
+
+    // Add the shape to the layer and redraw
+    layer.add(newShape);
+    layer.batchDraw();
+
+    // Create a Transformer instance and configure it
+    const tr = new Konva.Transformer({
+        node: newShape, // reference to the shape
+        enabledAnchors: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
+        boundBoxFunc: function(oldBox, newBox) {
+            // Limit the transformer box to specific dimensions if needed
+            return {
+                ...newBox,
+                width: Math.max(newBox.width, 50),
+                height: Math.max(newBox.height, 50)
+            };
+        },
+        rotateAnchorOffset: 60, // Distance of rotation handle from the shape
+    });
+
+    // Add the transformer to the layer
+    layer.add(tr);
+
+    // Listen to the dragend event to update the transformer's bounds
+    newShape.on('dragend', function() {
+        tr.forceUpdate();
+    });
+
+    // Listen to the transformend event to update the transformer's bounds after rotation
+    newShape.on('transformend', function() {
+        tr.forceUpdate();
+    });
+
+    // Listen to the click event on the shape to ensure the transformer gets focus
+    newShape.on('click', function() {
+        tr.nodes([newShape]);
+        layer.draw();
+    });
+
+    // Update the layer to reflect changes
+    layer.draw();
+}
+
+
+/////// arrow ///////
+
+
+
+
+
+
+        
+</script>
+
+<!-- ... (rest of your HTML code) -->
+
+
+
+    <script>
+        var width = window.innerWidth;
+        var height = window.innerHeight - (document.querySelector('header').offsetHeight + document.querySelector('footer').offsetHeight);
+
+        var stage = new Konva.Stage({
+            container: 'container',
+            width: width,
+            height: height,
+        });
+
+        var layer = new Konva.Layer();
+
+       
+
+        stage.add(layer);
+    </script>
+</body>
+
+</html>
