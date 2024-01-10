@@ -1,0 +1,33 @@
+<!-- Selected Tool Button -->
+<button class="btn btn-info btn-sm btn-block mb-2" id="selectedToolButton">Selected Tool: Pen</button>
+
+
+
+
+
+css
+
+/* Styling for the selected tool button */
+#selectedToolButton {
+    font-weight: bold;
+}
+
+
+
+js 
+
+
+
+// Function to update the selected tool button
+function updateSelectedToolButton(tool) {
+    document.getElementById('selectedToolButton').innerText = 'Selected Tool: ' + tool.charAt(0).toUpperCase() + tool.slice(1);
+}
+
+// Add event listeners to update the selected tool button
+$('#toolbox button').click(function() {
+    var tool = $(this).text().trim().toLowerCase();
+    updateSelectedToolButton(tool);
+});
+
+// Initialize the selected tool button with the default tool (e.g., Pen)
+updateSelectedToolButton('pen'); // Replace 'pen' with your default tool if different
