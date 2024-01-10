@@ -105,3 +105,52 @@ updateSelectedToolButton();
 
 
 
+------------------------------- updated code ----------------------------
+
+// Function to update the selected tool button
+function updateSelectedToolButton() {
+    var selectedTool = document.querySelector('#toolbox button.active');
+    
+    if (selectedTool) {
+        var toolName = selectedTool.innerText.trim().toLowerCase();
+        document.getElementById('selectedToolButton').innerText = 'Selected Tool: ' + toolName.charAt(0).toUpperCase() + toolName.slice(1);
+    } else {
+        document.getElementById('selectedToolButton').innerText = 'Selected Tool: None';
+    }
+}
+
+// Event listener for toolbox buttons
+$('#toolbox button').click(function() {
+    $('#toolbox button').removeClass('active'); // Remove active class from all buttons
+    $(this).addClass('active'); // Add active class to the clicked button
+    updateSelectedToolButton(); // Update the selected tool button
+});
+
+// Initialize the selected tool button with 'None'
+updateSelectedToolButton();
+
+
+-------------------------------------------
+
+
+
+<button id="penButton" class="btn btn-primary btn-sm btn-block mb-2">Pen</button>
+
+
+
+$(document).ready(function() {
+    // Trigger a click event on the "Pen" button to set it as the default tool
+    $('#penButton').click();
+    
+    // ... rest of your code
+});
+
+
+
+
+
+
+
+
+
+
