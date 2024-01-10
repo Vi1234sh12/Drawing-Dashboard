@@ -31,3 +31,77 @@ $('#toolbox button').click(function() {
 
 // Initialize the selected tool button with the default tool (e.g., Pen)
 updateSelectedToolButton('pen'); // Replace 'pen' with your default tool if different
+
+
+----------------------------------------------------
+<!-- Selected Tool Button -->
+<button class="btn btn-info btn-sm btn-block mb-2" id="selectedToolButton">Selected Tool: None</button>
+---------------------------------------------------------------------------------------------------------
+
+// Function to update the selected tool button
+function updateSelectedToolButton(tool) {
+    var selectedTools = document.querySelectorAll('#toolbox button.active');
+    var selectedToolNames = [];
+
+    selectedTools.forEach(function(item) {
+        selectedToolNames.push(item.innerText.trim().toLowerCase());
+    });
+
+    if (selectedToolNames.length === 0) {
+        document.getElementById('selectedToolButton').innerText = 'Selected Tool: None';
+    } else {
+        document.getElementById('selectedToolButton').innerText = 'Selected Tools: ' + selectedToolNames.join(', ').charAt(0).toUpperCase() + selectedToolNames.join(', ').slice(1);
+    }
+}
+
+// Add event listeners to update the selected tool button
+$('#toolbox button').click(function() {
+    $(this).toggleClass('active');
+    var tool = $(this).text().trim().toLowerCase();
+    updateSelectedToolButton(tool);
+});
+
+// Initialize the selected tool button with 'None'
+updateSelectedToolButton('');
+
+
+
+------------------------------------
+
+#toolbox button.active {
+    background-color: #007bff; /* Blue color as an example */
+    color: #ffffff; /* White color for text */
+}
+
+-------------------------------
+
+
+// Function to update the selected tool button
+function updateSelectedToolButton() {
+    var selectedTools = document.querySelectorAll('#toolbox button.active');
+    var selectedToolNames = [];
+
+    selectedTools.forEach(function(item) {
+        selectedToolNames.push(item.innerText.trim().toLowerCase());
+    });
+
+    if (selectedToolNames.length === 0) {
+        document.getElementById('selectedToolButton').innerText = 'Selected Tool: None';
+    } else {
+        document.getElementById('selectedToolButton').innerText = 'Selected Tools: ' + selectedToolNames.join(', ').charAt(0).toUpperCase() + selectedToolNames.join(', ').slice(1);
+    }
+}
+
+// Event listener for toolbox buttons
+$('#toolbox button').click(function() {
+    $(this).toggleClass('active');
+    updateSelectedToolButton();
+});
+
+// Initialize the selected tool button with 'None'
+updateSelectedToolButton();
+
+
+
+
+
