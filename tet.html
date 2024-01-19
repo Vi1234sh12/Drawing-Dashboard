@@ -3,27 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Konva.js Line Drawing</title>
+  <title>Konva.js Shape Drawing</title>
   <script src="https://unpkg.com/konva@8.0.1/konva.min.js"></script>
 </head>
 <body>
   <div>
-    <label for="lineType">Select Line Type:</label>
-    <select id="lineType">
-      <option value="solid">Solid Line</option>
-      <option value="dotted">Dotted Line</option>
-      <option value="dot-dot">Dot-Dot Line</option>
-      <option value="dash-dot">Dash-Dot Line</option>
-      <option value="dash-dash">Dash-Dash Line</option>
-      <option value="curve">Curve Line</option>
-      <option value="arrow-left">Arrow Left</option>
-      <option value="arrow-right">Arrow Right</option>
-      <option value="arrow-top">Arrow Top</option>
-      <option value="arrow-bottom">Arrow Bottom</option>
-      <option value="arrow-both">Arrow Both</option>
-      <option value="button-rect">Button Rectangle</option>
-      <option value="button-circle">Button Circle</option>
+    <label for="shapeType">Select Shape Type:</label>
+    <select id="shapeType">
+      <option value="line">Line</option>
+      <option value="circle">Circle</option>
+      <option value="triangle">Triangle</option>
+      <option value="rectangle">Rectangle</option>
+      <option value="square">Square</option>
+      <option value="hexagon">Hexagon</option>
+      <option value="star">Star</option>
     </select>
+    <button id="removeShapeBtn">Remove Shape</button>
   </div>
 
   <div id="container"></div>
@@ -39,81 +34,78 @@
     stage.add(layer);
 
     let isDrawing = false;
-    let lineType = 'solid';
+    let shapeType = 'line';
+    let selectedShape = null;
+    let transformer = null;
 
-    function createNewLine() {
-      return new Konva.Line({
-        stroke: 'black',
-        strokeWidth: 2,
-        lineCap: 'round',
-        lineJoin: 'round',
-      });
-    }
-
-    function createArrowhead(type) {
-      switch (type) {
-        case 'arrow-left':
-          return new Konva.RegularPolygon({
-            sides: 3,
-            radius: 8,
-            fill: 'black',
-            rotation: -90,
-          });
-        case 'arrow-right':
-          return new Konva.RegularPolygon({
-            sides: 3,
-            radius: 8,
-            fill: 'black',
-            rotation: 90,
-          });
-        case 'arrow-top':
-          return new Konva.RegularPolygon({
-            sides: 3,
-            radius: 8,
-            fill: 'black',
-            rotation: 180,
-          });
-        case 'arrow-bottom':
-          return new Konva.RegularPolygon({
-            sides: 3,
-            radius: 8,
-            fill: 'black',
-          });
-        case 'arrow-both':
-          return new Konva.Group({
-            rotation: 180,
-            children: [
-              new Konva.RegularPolygon({
-                sides: 3,
-                radius: 8,
-                fill: 'black',
-              }),
-              new Konva.RegularPolygon({
-                sides: 3,
-                radius: 8,
-                fill: 'black',
-                y: -16,
-              }),
-            ],
-          });
-        default:
-          return null;
-      }
-    }
-
-    function createButton(type) {
-      switch (type) {
-        case 'button-rect':
-          return new Konva.Rect({
-            width: 80,
-            height: 40,
-            fill: 'blue',
+    function createNewShape() {
+      switch (shapeType) {
+        case 'line':
+          return new Konva.Line({
+            stroke: 'black',
+            strokeWidth: 2,
+            lineCap: 'round',
+            lineJoin: 'round',
             draggable: true,
           });
-        case 'button-circle':
+        case 'circle':
           return new Konva.Circle({
-            radius: 25,
-            fill: 'red',
+            x: 0,
+            y: 0,
+            radius: 0,
+            stroke: 'black',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'triangle':
+          return new Konva.RegularPolygon({
+            x: 0,
+            y: 0,
+            sides: 3,
+            radius: 0,
+            stroke: 'black',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'rectangle':
+          return new Konva.Rect({
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+            stroke: 'black',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'square':
+          return new Konva.Rect({
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+            stroke: 'black',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'hexagon':
+          return new Konva.RegularPolygon({
+            x: 0,
+            y: 0,
+            sides: 6,
+            radius: 0,
+            stroke: 'black',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'star':
+          return new Konva.Star({
+            x: 0,
+            y: 0,
+            numPoints: 5,
+            innerRadius: 0,
+            outerRadius: 0,
+            stroke: 'black',
+            strokeWidth: 2,
             draggable: true,
           });
         default:
@@ -121,127 +113,131 @@
       }
     }
 
-    let line = createNewLine();
-    layer.add(line);
-
-    let arrowhead;
+    let shape = createNewShape();
+    layer.add(shape);
 
     stage.on('mousedown touchstart', (e) => {
-      isDrawing = true;
-      const pos = stage.getPointerPosition();
-      line.points([pos.x, pos.y]);
-      arrowhead = createArrowhead(lineType);
-      if (arrowhead) {
-        arrowhead.position({ x: pos.x, y: pos.y });
-        layer.add(arrowhead);
+      const shapeClicked = e.target;
+      if (shapeClicked && shapeClicked instanceof Konva.Shape) {
+        if (selectedShape === shapeClicked) {
+          // Double-clicked on the same shape
+          toggleTransformer(selectedShape);
+        } else {
+          // Clicked on a different shape
+          selectedShape = shapeClicked;
+          removeTransformer();
+          transformer = createTransformer(selectedShape);
+          layer.add(transformer);
+          layer.draw();
+        }
+      } else {
+        isDrawing = true;
+        shape = createNewShape();
+        layer.add(shape);
+        setShapePosition(shape, e);
+        removeTransformer();
       }
-      layer.draw();
     });
 
-    stage.on('mousemove touchmove', () => {
+    stage.on('mousemove touchmove', (e) => {
       if (!isDrawing) {
         return;
       }
 
       const pos = stage.getPointerPosition();
-      const newPoints = line.points().concat([pos.x, pos.y]);
-
-      if (lineType === 'dotted' || lineType === 'dot-dot' || lineType === 'dash-dot' || lineType === 'dash-dash') {
-        const dashArray = getDashArray(lineType);
-        line.dash(dashArray);
-      } else {
-        line.dash([]);
-      }
-
-      if (lineType === 'curve') {
-        line.points(newPoints);
-      } else {
-        line.points([]);
-        line.points(newPoints);
-      }
-
-      if (arrowhead) {
-        arrowhead.position({ x: pos.x, y: pos.y });
-        if (lineType.startsWith('arrow-')) {
-          const angle = Math.atan2(pos.y - newPoints[newPoints.length - 3], pos.x - newPoints[newPoints.length - 4]);
-          arrowhead.rotation((angle * 180) / Math.PI);
-        }
-      }
-
+      updateShape(shape, pos);
       layer.batchDraw();
     });
 
     stage.on('mouseup touchend', () => {
       isDrawing = false;
-      // Start a new line after releasing the mouse/touch
-      line = createNewLine();
-      layer.add(line);
+      // Start a new shape after releasing the mouse/touch
+      shape = createNewShape();
+      layer.add(shape);
+      removeTransformer();
     });
 
-    document.getElementById('lineType').addEventListener('change', (e) => {
-      lineType = e.target.value;
-      // Remove the existing arrowhead when line type changes
-      if (arrowhead) {
-        arrowhead.destroy();
-      }
-      arrowhead = createArrowhead(lineType);
-      if (arrowhead && isDrawing) {
-        const pos = stage.getPointerPosition();
-        arrowhead.position({ x: pos.x, y: pos.y });
-        layer.add(arrowhead);
-      }
+    document.getElementById('shapeType').addEventListener('change', (e) => {
+      shapeType = e.target.value;
+      removeTransformer();
+      selectedShape = null;
     });
 
-    function getDashArray(type) {
-      switch (type) {
-        case 'dotted':
-          return [1, 3];
-        case 'dot-dot':
-          return [1, 5];
-        case 'dash-dot':
-          return [10, 3];
-        case 'dash-dash':
-          return [15, 5];
-        default:
-          return [];
-      }
-    }
-
-    // Create a button
-    const buttonType = 'button-rect'; // Change to 'button-circle' for a circular button
-    const button = createButton(buttonType);
-    layer.add(button);
-
-    // Add transformer for resizing and dragging the button
-    const transformer = new Konva.Transformer();
-    layer.add(transformer);
-
-    // Select the button on click
-    button.on('click', () => {
-      transformer.attachTo(button);
-      layer.draw();
-    });
-
-    // Deselect on any other click
-    stage.on('click', (e) => {
-      // Deselect if the click was not on the button
-      if (e.target !== button) {
-        transformer.detach();
+    document.getElementById('removeShapeBtn').addEventListener('click', () => {
+      if (selectedShape) {
+        selectedShape.destroy();
+        selectedShape = null;
+        removeTransformer();
         layer.draw();
       }
     });
 
-    // Handle resizing of the button
-    transformer.on('transform', () => {
-      // Update the button size based on the transformer
-      const scaleX = button.scaleX();
-      const scaleY = button.scaleY();
-      button.width(button.width() * scaleX);
-      button.height(button.height() * scaleY);
-      button.scaleX(1);
-      button.scaleY(1);
-      layer.batchDraw();
-    });
+    function setShapePosition(shape, e) {
+      const pos = stage.getPointerPosition();
+      shape.position({
+        x: pos.x,
+        y: pos.y,
+      });
+
+      if (shapeType === 'square' || shapeType === 'rectangle') {
+        shape.width(0);
+        shape.height(0);
+      } else if (shapeType === 'circle' || shapeType === 'triangle' || shapeType === 'hexagon' || shapeType === 'star') {
+        shape.radius(0);
+      }
+
+      shape.points([]);
+    }
+
+    function updateShape(shape, pos) {
+      if (shapeType === 'line') {
+        const points = shape.points().concat([pos.x, pos.y]);
+        shape.points(points);
+      } else if (shapeType === 'circle') {
+        const radius = Math.sqrt(Math.pow(pos.x - shape.x(), 2) + Math.pow(pos.y - shape.y(), 2));
+        shape.radius(radius);
+      } else if (shapeType === 'triangle' || shapeType === 'hexagon' || shapeType === 'star') {
+        const radius = Math.sqrt(Math.pow(pos.x - shape.x(), 2) + Math.pow(pos.y - shape.y(), 2));
+        shape.radius(radius);
+      } else if (shapeType === 'rectangle' || shapeType === 'square') {
+        const width = pos.x - shape.x();
+        const height = pos.y - shape.y();
+        shape.width(width);
+        shape.height(height);
+      }
+    }
+
+    function removeTransformer() {
+      if (transformer) {
+        transformer.detach();
+        transformer.destroy();
+        transformer = null;
+      }
+    }
+
+    function createTransformer(shape) {
+      return new Konva.Transformer({
+        anchorStroke: 'red',
+        anchorFill: 'yellow',
+        anchorSize: 20,
+        borderStroke: 'green',
+        borderDash: [3, 3],
+        nodes: [shape],
+        enabledAnchors: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
+      });
+    }
+
+    function toggleTransformer(selectedShape) {
+      if (transformer && transformer.nodes()[0] === selectedShape) {
+        // If transformer exists and selected shape is the same, remove transformer
+        removeTransformer();
+      } else {
+        // If no transformer or selected shape is different, add transformer
+        transformer = createTransformer(selectedShape);
+        layer.add(transformer);
+        layer.draw();
+      }
+    }
   </script>
 </body>
 </html>
