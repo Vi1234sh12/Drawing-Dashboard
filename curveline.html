@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Konva.js Shape Adjustments</title>
+  <script src="https://unpkg.com/konva@7.2.3/konva.min.js"></script>
+</head>
+<body>
+  <h1>Konva.js Shape Adjustments</h1>
+
+  <label>Select Shape:</label>
+  <select id="shapeSelect">
+    <option value="rect">Rectangle</option>
+    <option value="circle">Circle</option>
+    <option value="square">Square</option>
+    <option value="star">Star</option>
+    <option value="pentagon">Pentagon</option>
+    <option value="hexagon">Hexagon</option>
+    <option value="line">Line</option>
+    <option value="curve">Curve</option>
+  </select>
+
+  <!-- For line type selection -->
+  <label>Line Type:</label>
+  <select id="lineTypeSelect">
+    <option value="solid">Solid</option>
+    <option value="dash">Dash</option>
+    <option value="dot-dash">Dot Dash</option>
+    <option value="curve">Curve</option>
+    <option value="dot-dot-dash">Dot Dot Dash</option>
+  </select>
+
+  <!-- For curve tension adjustment -->
+  <label>Curve Tension:</label>
+  <input type="range" id="tensionRange" min="0" max="1" step="0.1" value="0.5">
+  <span id="tensionValue">0.5</span>
+
+  <h2>Shape Settings</h2>
+  <label>Size:</label>
+  <input type="range" id="sizeRange" min="10" max="300" value="100">
+  <span id="sizeValue">100</span>
+
+  <br>
+
+  <label>Fill Color:</label>
+  <input type="color" id="fillColorPicker" value="#ffffff">
+
+  <br>
+
+  <label>Stroke Color:</label>
+  <input type="color" id="strokeColorPicker" value="#000000">
+
+  <br>
+
+  <label>Width/Radius:</label>
+  <input type="range" id="widthRange" min="1" max="100" value="2">
+  <span id="widthValue">2</span>
+
+  <br>
+
+  <label>Scale:</label>
+  <input type="range" id="scaleRange" min="0.1" max="2" step="0.1" value="1">
+  <span id="scaleValue">1</span>
+
+  <br>
+
+  <div id="container"></div>
+
+  <script>
+    const stage = new Konva.Stage({
+      container: 'container',
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+
+    const layer = new Konva.Layer();
+    stage.add(layer);
+
+    let selectedShape;
+
+    function createShape(type, x, y) {
+      switch (type) {
+        case 'rect':
+          return new Konva.Rect({
+            x: x,
+            y: y,
+            width: 100,
+            height: 50,
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'circle':
+          return new Konva.Circle({
+            x: x,
+            y: y,
+            radius: 50,
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'square':
+          return new Konva.Rect({
+            x: x,
+            y: y,
+            width: 100,
+            height: 100,
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'star':
+          return new Konva.Star({
+            x: x,
+            y: y,
+            numPoints: 5,
+            innerRadius: 30,
+            outerRadius: 70,
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'pentagon':
+          return new Konva.RegularPolygon({
+            x: x,
+            y: y,
+            sides: 5,
+            radius: 50,
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'hexagon':
+          return new Konva.RegularPolygon({
+            x: x,
+            y: y,
+            sides: 6,
+            radius: 50,
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'line':
+          return new Konva.Line({
+            points: [x, y, x + 100, y],  // Set the initial line horizontally
+            stroke: '#000000',
+            strokeWidth: 2,
+            lineJoin: 'round',
+            draggable: true,
+          });
+        case 'curve':
+          return new Konva.Line({
+            points: [x, y, x + 50, y, x + 100, y],  // Set anchor point in the middle
+            stroke: '#000000',
+            strokeWidth: 2,
+            lineJoin: 'round',
+            tension: 0.5,
+            draggable: true,
+          });
+        default:
+          return null;
+      }
+    }
+
+    function updateShape() {
+      if (!selectedShape) return;
+
+      const size = parseInt(document.getElementById('sizeRange').value);
+      const width = parseInt(document.getElementById('widthRange').value);
+      const scale = parseFloat(document.getElementById('scaleRange').value);
+      const fillColor = document.getElementById('fillColorPicker').value;
+      const strokeColor = document.getElementById('strokeColorPicker').value;
+
+      document.getElementById('sizeValue').innerText = size;
+      document.getElementById('widthValue').innerText = width;
+      document.getElementById('scaleValue').innerText = scale;
+
+      if (selectedShape) {
+        if (selectedShape.radius !== undefined) {
+          selectedShape.radius(size * scale);
+        } else {
+          selectedShape.width(size * scale);
+          selectedShape.height(size * scale);
+        }
+
+        selectedShape.strokeWidth(width);
+        selectedShape.fill(fillColor);
+        selectedShape.stroke(strokeColor);
+
+        if (selectedShape.className === 'Line' && selectedShape.tension() !== undefined) {
+          const lineType = document.getElementById('lineTypeSelect').value;
+          updateLineType(selectedShape, lineType, size * scale);
+        }
+
+        if (selectedShape.className === 'Line' && selectedShape.tension() !== undefined) {
+          const tension = parseFloat(document.getElementById('tensionRange').value);
+          document.getElementById('tensionValue').innerText = tension;
+          selectedShape.tension(tension);
+        }
+
+        layer.batchDraw();
+      }
+    }
+
+    function updateLineType(line, type, newSize) {
+      switch (type) {
+        case 'solid':
+          line.dash([]);
+          line.tension(0.5);
+          break;
+        case 'dash':
+          line.dash([10, 5]);
+          line.tension(0.5);
+          break;
+        case 'dot-dash':
+          line.dash([2, 5, 10, 5]);
+          line.tension(0.5);
+          break;
+        case 'curve':
+          line.tension(0.5);
+          break;
+        case 'dot-dot-dash':
+          line.dash([2, 2, 5, 2, 2, 10]);
+          line.tension(0.5);
+          break;
+        default:
+          break;
+      }
+
+      // Calculate line length based on new size
+      const angle = Math.atan2(line.points()[3] - line.points()[1], line.points()[2] - line.points()[0]);
+      const newX2 = line.points()[0] + newSize * Math.cos(angle);
+      const newY2 = line.points()[1] + newSize * Math.sin(angle);
+      line.points([line.points()[0], line.points()[1], newX2, newY2]);
+    }
+
+    document.getElementById('sizeRange').addEventListener('input', updateShape);
+    document.getElementById('widthRange').addEventListener('input', updateShape);
+    document.getElementById('scaleRange').addEventListener('input', updateShape);
+    document.getElementById('fillColorPicker').addEventListener('input', updateShape);
+    document.getElementById('strokeColorPicker').addEventListener('input', updateShape);
+    document.getElementById('lineTypeSelect').addEventListener('change', updateShape);
+    document.getElementById('tensionRange').addEventListener('input', updateShape);
+
+    document.getElementById('shapeSelect').addEventListener('change', function() {
+      const shapeType = this.value;
+      const x = window.innerWidth / 2;
+      const y = window.innerHeight / 2;
+
+      // Remove existing shape
+      if (selectedShape) {
+        selectedShape.destroy();
+        selectedShape = null;
+      }
+
+      // Create and add new shape
+      selectedShape = createShape(shapeType, x, y);
+      if (selectedShape) {
+        layer.add(selectedShape);
+        stage.draw();
+        updateShape();
+      }
+    });
+  </script>
+</body>
+</html>
