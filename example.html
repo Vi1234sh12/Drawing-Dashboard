@@ -1,0 +1,1123 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Konva Drawing</title>
+  <script src="https://cdn.rawgit.com/konvajs/konva/3.0.0/konva.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    const points = [];
+    let isDraw = false;
+    let line;
+
+    const handleMouseDown = (event) => {
+      isDraw = true;
+      const { x, y } = stage.getPointerPosition();
+      if (event.evt.button !== 2) {
+        points.push({ x, y });
+        updateLine();
+      }
+    };
+
+    const handleMouseUp = () => {
+      isDraw = false;
+    };
+
+    const handleMouseMove = () => {
+      if (isDraw) {
+        const { x, y } = stage.getPointerPosition();
+        points[1] = { x, y };
+        updateLine();
+      }
+    };
+
+    const stage = new Konva.Stage({
+      container: 'root',
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+
+    const layer = new Konva.Layer();
+    stage.add(layer);
+
+    const updateLine = () => {
+      if (line) {
+        line.destroy();
+      }
+
+      line = new Konva.Line({
+        points: [points[0].x, points[0].y, points[1].x, points[1].y],
+        strokeWidth: 1,
+        stroke: '#0EA5E9',
+        lineCap: 'round',
+        lineJoin: 'round',
+      });
+
+      layer.add(line);
+      layer.batchDraw();
+    };
+
+    stage.on('mousedown', handleMouseDown);
+    stage.on('mouseup', handleMouseUp);
+    stage.on('mousemove', handleMouseMove);
+  </script>
+</body>
+</html> -->
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Straight Line Polygon Konva Drawing</title>
+  <script src="https://cdn.rawgit.com/konvajs/konva/3.0.0/konva.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    const points = [];
+    let isDrawing = false;
+    let lineGroup;
+
+    const stage = new Konva.Stage({
+      container: 'root',
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+
+    const layer = new Konva.Layer();
+    stage.add(layer);
+
+    const handleMouseDown = (event) => {
+      isDrawing = true;
+      const { x, y } = stage.getPointerPosition();
+      if (event.evt.button !== 2) {
+        points.push({ x, y });
+        updateLines();
+      }
+    };
+
+    const handleMouseUp = () => {
+      isDrawing = false;
+    };
+
+    const handleMouseMove = () => {
+      if (isDrawing) {
+        const { x, y } = stage.getPointerPosition();
+        points.push({ x, y });
+        updateLines();
+      }
+    };
+
+    const updateLines = () => {
+      if (lineGroup) {
+        lineGroup.destroy();
+      }
+
+      lineGroup = new Konva.Group();
+
+      for (let i = 1; i < points.length; i++) {
+        const line = new Konva.Line({
+          points: [points[i - 1].x, points[i - 1].y, points[i].x, points[i].y],
+          strokeWidth: 1,
+          stroke: '#0EA5E9',
+          lineCap: 'round',
+          lineJoin: 'round',
+        });
+
+        lineGroup.add(line);
+      }
+
+      layer.destroyChildren();
+      layer.add(lineGroup);
+      layer.batchDraw();
+    };
+
+    stage.on('mousedown', handleMouseDown);
+    stage.on('mouseup', handleMouseUp);
+    stage.on('mousemove', handleMouseMove);
+  </script>
+</body>
+</html> -->
+
+
+
+
+<!-- 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Independent Straight Lines Konva Drawing</title>
+  <script src="https://cdn.rawgit.com/konvajs/konva/7.2.3/konva.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    const lines = [];
+    let isDraw = false;
+    let currentLine;
+
+    const stage = new Konva.Stage({
+      container: 'root',
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+
+    const layer = new Konva.Layer();
+    stage.add(layer);
+
+    const handleMouseDown = (event) => {
+      isDraw = true;
+      const { x, y } = stage.getPointerPosition();
+      if (event.evt.button !== 2) {
+        currentLine = {
+          points: [x, y, x, y], // Start with a single point
+          strokeWidth: 1,
+          stroke: '#0EA5E9',
+          lineCap: 'round',
+          lineJoin: 'round',
+        };
+        lines.push(currentLine);
+        updateLines();
+      }
+    };
+
+    const handleMouseUp = () => {
+      isDraw = false;
+    };
+
+    const handleMouseMove = () => {
+      if (isDraw) {
+        const { x, y } = stage.getPointerPosition();
+        // Update the last point of the current line
+        currentLine.points[2] = x;
+        currentLine.points[3] = y;
+        updateLines();
+      }
+    };
+
+    const updateLines = () => {
+      layer.destroyChildren();
+
+      lines.forEach(lineData => {
+        const line = new Konva.Line(lineData);
+        layer.add(line);
+      });
+
+      layer.batchDraw();
+    };
+
+    stage.on('mousedown', handleMouseDown);
+    stage.on('mouseup', handleMouseUp);
+    stage.on('mousemove', handleMouseMove);
+  </script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Rectangle Adjuster</title>
+    <script src="https://cdn.jsdelivr.net/npm/konva@8.3.4/konva.min.js"></script>
+    <style>
+        body { margin: 20px; }
+        .slider-label { margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <div>
+        <div>
+            <span class="slider-label">Width:</span>
+            <input type="range" id="widthSlider" min="20" max="500" value="100">
+            <span id="widthValue">100</span>
+        </div>
+        <div>
+            <span class="slider-label">Height:</span>
+            <input type="range" id="heightSlider" min="20" max="500" value="50">
+            <span id="heightValue">50</span>
+        </div>
+        <div>
+            <span class="slider-label">Stroke:</span>
+            <input type="range" id="strokeSlider" min="1" max="20" value="4">
+            <span id="strokeValue">4</span>
+        </div>
+    </div>
+    <div id="container"></div>
+
+    <script>
+        var width = document.getElementById('widthSlider').value;
+        var height = document.getElementById('heightSlider').value;
+        var stroke = document.getElementById('strokeSlider').value;
+
+        // Update the span values
+        document.getElementById('widthValue').innerText = width;
+        document.getElementById('heightValue').innerText = height;
+        document.getElementById('strokeValue').innerText = stroke;
+
+        var stage = new Konva.Stage({
+            container: 'container',
+            width: window.innerWidth,
+            height: window.innerHeight,
+        });
+
+        var layer = new Konva.Layer();
+        stage.add(layer);
+
+        var rectangle = new Konva.Rect({
+            x: stage.width() / 2 - 50,
+            y: stage.height() / 2 - 25,
+            width: 100,
+            height: 50,
+            stroke: 'black',
+            strokeWidth: 4,
+            draggable: true,
+        });
+
+        layer.add(rectangle);
+        layer.draw();
+
+        // Update functions
+        function updateWidth(value) {
+            rectangle.width(value);
+            layer.draw();
+        }
+
+        function updateHeight(value) {
+            rectangle.height(value);
+            layer.draw();
+        }
+
+        function updateStroke(value) {
+            rectangle.strokeWidth(value);
+            layer.draw();
+        }
+
+        // Event listeners for sliders
+        document.getElementById('widthSlider').addEventListener('input', function () {
+            var value = this.value;
+            updateWidth(value);
+            document.getElementById('widthValue').innerText = value;
+        });
+
+        document.getElementById('heightSlider').addEventListener('input', function () {
+            var value = this.value;
+            updateHeight(value);
+            document.getElementById('heightValue').innerText = value;
+        });
+
+        document.getElementById('strokeSlider').addEventListener('input', function () {
+            var value = this.value;
+            updateStroke(value);
+            document.getElementById('strokeValue').innerText = value;
+        });
+    </script>
+</body>
+</html> -->
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Konva.js Rectangle Adjustments</title>
+  <script src="https://unpkg.com/konva@7.2.3/konva.min.js"></script>
+</head>
+<body>
+  <h1>Konva.js Rectangle Adjustments</h1>
+
+  <label>Width:</label>
+  <input type="range" id="widthRange" min="10" max="300" value="100">
+  <span id="widthValue">100</span>
+
+  <br>
+
+  <label>Height:</label>
+  <input type="range" id="heightRange" min="10" max="200" value="50">
+  <span id="heightValue">50</span>
+
+  <br>
+
+  <label>Stroke:</label>
+  <input type="range" id="strokeRange" min="1" max="10" value="2">
+  <span id="strokeValue">2</span>
+
+  <br>
+
+  <label>Scale:</label>
+  <input type="range" id="scaleRange" min="0.1" max="2" step="0.1" value="1">
+  <span id="scaleValue">1</span>
+
+  <br>
+
+  <div id="container"></div>
+
+  <script>
+    const stage = new Konva.Stage({
+      container: 'container',
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+
+    const layer = new Konva.Layer();
+    stage.add(layer);
+
+    const rectangle = new Konva.Rect({
+      x: (window.innerWidth - 100) / 2,
+      y: (window.innerHeight - 50) / 2,
+      width: 100,
+      height: 50,
+      stroke: 'black',
+      strokeWidth: 2,
+      draggable: true,
+    });
+
+    layer.add(rectangle);
+    stage.draw();
+
+    function updateRectangle() {
+      const width = parseInt(document.getElementById('widthRange').value);
+      const height = parseInt(document.getElementById('heightRange').value);
+      const stroke = parseInt(document.getElementById('strokeRange').value);
+      const scale = parseFloat(document.getElementById('scaleRange').value);
+
+      document.getElementById('widthValue').innerText = width;
+      document.getElementById('heightValue').innerText = height;
+      document.getElementById('strokeValue').innerText = stroke;
+      document.getElementById('scaleValue').innerText = scale;
+
+      rectangle.width(width * scale);
+      rectangle.height(height * scale);
+      rectangle.strokeWidth(stroke);
+
+      layer.batchDraw();
+    }
+
+    document.getElementById('widthRange').addEventListener('input', updateRectangle);
+    document.getElementById('heightRange').addEventListener('input', updateRectangle);
+    document.getElementById('strokeRange').addEventListener('input', updateRectangle);
+    document.getElementById('scaleRange').addEventListener('input', updateRectangle);
+  </script>
+</body>
+</html> -->
+
+
+
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Konva.js Shapes Adjustments</title>
+  <script src="https://unpkg.com/konva@7.2.3/konva.min.js"></script>
+</head>
+<body>
+  <h1>Konva.js Shapes Adjustments</h1>
+
+  <label>Width:</label>
+  <input type="range" id="widthRange" min="10" max="300" value="100">
+  <span id="widthValue">100</span>
+
+  <br>
+
+  <label>Height:</label>
+  <input type="range" id="heightRange" min="10" max="200" value="50">
+  <span id="heightValue">50</span>
+
+  <br>
+
+  <label>Radius:</label>
+  <input type="range" id="radiusRange" min="10" max="150" value="50">
+  <span id="radiusValue">50</span>
+
+  <br>
+
+  <label>Stroke:</label>
+  <input type="range" id="strokeRange" min="1" max="10" value="2">
+  <span id="strokeValue">2</span>
+
+  <br>
+
+  <label>Scale:</label>
+  <input type="range" id="scaleRange" min="0.1" max="2" step="0.1" value="1">
+  <span id="scaleValue">1</span>
+
+  <br>
+
+  <div id="container"></div>
+
+  <script>
+    const stage = new Konva.Stage({
+      container: 'container',
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+
+    const layer = new Konva.Layer();
+    stage.add(layer);
+
+    // Rectangle
+    const rectangle = new Konva.Rect({
+      x: (window.innerWidth - 100) / 2,
+      y: (window.innerHeight - 50) / 2,
+      width: 100,
+      height: 50,
+      stroke: 'black',
+      strokeWidth: 2,
+      draggable: true,
+    });
+
+    // Circle
+    const circle = new Konva.Circle({
+      x: window.innerWidth / 4,
+      y: window.innerHeight / 2,
+      radius: 50,
+      stroke: 'blue',
+      strokeWidth: 2,
+      draggable: true,
+    });
+
+    // Triangle
+    const triangle = new Konva.RegularPolygon({
+      x: window.innerWidth * (3 / 4),
+      y: window.innerHeight / 2,
+      sides: 3,
+      radius: 50,
+      stroke: 'green',
+      strokeWidth: 2,
+      draggable: true,
+    });
+
+    layer.add(rectangle, circle, triangle);
+    stage.draw();
+
+    function updateShapes() {
+      // Rectangle
+      const rectWidth = parseInt(document.getElementById('widthRange').value);
+      const rectHeight = parseInt(document.getElementById('heightRange').value);
+      const rectStroke = parseInt(document.getElementById('strokeRange').value);
+      const rectScale = parseFloat(document.getElementById('scaleRange').value);
+
+      // Circle
+      const circleRadius = parseInt(document.getElementById('radiusRange').value);
+      const circleStroke = parseInt(document.getElementById('strokeRange').value);
+      const circleScale = parseFloat(document.getElementById('scaleRange').value);
+
+      // Triangle
+      const triangleRadius = parseInt(document.getElementById('radiusRange').value);
+      const triangleStroke = parseInt(document.getElementById('strokeRange').value);
+      const triangleScale = parseFloat(document.getElementById('scaleRange').value);
+
+      document.getElementById('widthValue').innerText = rectWidth;
+      document.getElementById('heightValue').innerText = rectHeight;
+      document.getElementById('radiusValue').innerText = circleRadius;
+      document.getElementById('strokeValue').innerText = rectStroke;
+      document.getElementById('scaleValue').innerText = rectScale;
+
+      // Update Rectangle
+      rectangle.width(rectWidth * rectScale);
+      rectangle.height(rectHeight * rectScale);
+      rectangle.strokeWidth(rectStroke);
+
+      // Update Circle
+      circle.radius(circleRadius * circleScale);
+      circle.strokeWidth(circleStroke);
+
+      // Update Triangle
+      triangle.radius(triangleRadius * triangleScale);
+      triangle.strokeWidth(triangleStroke);
+
+      layer.batchDraw();
+    }
+
+    document.getElementById('widthRange').addEventListener('input', updateShapes);
+    document.getElementById('heightRange').addEventListener('input', updateShapes);
+    document.getElementById('radiusRange').addEventListener('input', updateShapes);
+    document.getElementById('strokeRange').addEventListener('input', updateShapes);
+    document.getElementById('scaleRange').addEventListener('input', updateShapes);
+  </script>
+</body>
+</html> -->
+
+
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Konva.js Shape Adjustments</title>
+  <script src="https://unpkg.com/konva@7.2.3/konva.min.js"></script>
+</head>
+<body>
+  <h1>Konva.js Shape Adjustments</h1>
+
+  <h2>Rectangle</h2>
+  <label>Width:</label>
+  <input type="range" id="rectWidthRange" min="10" max="300" value="100">
+  <span id="rectWidthValue">100</span>
+
+  <br>
+
+  <label>Height:</label>
+  <input type="range" id="rectHeightRange" min="10" max="200" value="50">
+  <span id="rectHeightValue">50</span>
+
+  <br>
+
+  <label>Stroke:</label>
+  <input type="range" id="rectStrokeRange" min="1" max="10" value="2">
+  <span id="rectStrokeValue">2</span>
+
+  <br>
+
+  <label>Scale:</label>
+  <input type="range" id="rectScaleRange" min="0.1" max="2" step="0.1" value="1">
+  <span id="rectScaleValue">1</span>
+
+  <br>
+
+  <h2>Circle</h2>
+  <label>Radius:</label>
+  <input type="range" id="circleRadiusRange" min="10" max="150" value="50">
+  <span id="circleRadiusValue">50</span>
+
+  <br>
+
+  <label>Stroke:</label>
+  <input type="range" id="circleStrokeRange" min="1" max="10" value="2">
+  <span id="circleStrokeValue">2</span>
+
+  <br>
+
+  <label>Scale:</label>
+  <input type="range" id="circleScaleRange" min="0.1" max="2" step="0.1" value="1">
+  <span id="circleScaleValue">1</span>
+
+  <br>
+
+  <h2>Triangle</h2>
+  <label>Side Length:</label>
+  <input type="range" id="triangleSideRange" min="10" max="200" value="50">
+  <span id="triangleSideValue">50</span>
+
+  <br>
+
+  <label>Stroke:</label>
+  <input type="range" id="triangleStrokeRange" min="1" max="10" value="2">
+  <span id="triangleStrokeValue">2</span>
+
+  <br>
+
+  <label>Scale:</label>
+  <input type="range" id="triangleScaleRange" min="0.1" max="2" step="0.1" value="1">
+  <span id="triangleScaleValue">1</span>
+
+  <br>
+
+  <div id="container"></div>
+
+  <script>
+    const stage = new Konva.Stage({
+      container: 'container',
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+
+    const layer = new Konva.Layer();
+    stage.add(layer);
+
+    const rect = new Konva.Rect({
+      x: (window.innerWidth - 100) / 2,
+      y: (window.innerHeight - 50) / 2,
+      width: 100,
+      height: 50,
+      stroke: 'black',
+      strokeWidth: 2,
+      draggable: true,
+    });
+
+    const circle = new Konva.Circle({
+      x: window.innerWidth / 4,
+      y: window.innerHeight / 2,
+      radius: 50,
+      stroke: 'black',
+      strokeWidth: 2,
+      draggable: true,
+    });
+
+    const triangle = new Konva.RegularPolygon({
+      x: (window.innerWidth / 4) * 3,
+      y: window.innerHeight / 2,
+      sides: 3,
+      radius: 50,
+      stroke: 'black',
+      strokeWidth: 2,
+      draggable: true,
+    });
+
+    layer.add(rect, circle, triangle);
+    stage.draw();
+
+    function updateRectangle() {
+      const width = parseInt(document.getElementById('rectWidthRange').value);
+      const height = parseInt(document.getElementById('rectHeightRange').value);
+      const stroke = parseInt(document.getElementById('rectStrokeRange').value);
+      const scale = parseFloat(document.getElementById('rectScaleRange').value);
+
+      document.getElementById('rectWidthValue').innerText = width;
+      document.getElementById('rectHeightValue').innerText = height;
+      document.getElementById('rectStrokeValue').innerText = stroke;
+      document.getElementById('rectScaleValue').innerText = scale;
+
+      rect.width(width * scale);
+      rect.height(height * scale);
+      rect.strokeWidth(stroke);
+
+      layer.batchDraw();
+    }
+
+    function updateCircle() {
+      const radius = parseInt(document.getElementById('circleRadiusRange').value);
+      const stroke = parseInt(document.getElementById('circleStrokeRange').value);
+      const scale = parseFloat(document.getElementById('circleScaleRange').value);
+
+      document.getElementById('circleRadiusValue').innerText = radius;
+      document.getElementById('circleStrokeValue').innerText = stroke;
+      document.getElementById('circleScaleValue').innerText = scale;
+
+      circle.radius(radius * scale);
+      circle.strokeWidth(stroke);
+
+      layer.batchDraw();
+    }
+
+    function updateTriangle() {
+      const side = parseInt(document.getElementById('triangleSideRange').value);
+      const stroke = parseInt(document.getElementById('triangleStrokeRange').value);
+      const scale = parseFloat(document.getElementById('triangleScaleRange').value);
+
+      document.getElementById('triangleSideValue').innerText = side;
+      document.getElementById('triangleStrokeValue').innerText = stroke;
+      document.getElementById('triangleScaleValue').innerText = scale;
+
+      triangle.radius(side * scale);
+      triangle.strokeWidth(stroke);
+
+      layer.batchDraw();
+    }
+
+    document.getElementById('rectWidthRange').addEventListener('input', updateRectangle);
+    document.getElementById('rectHeightRange').addEventListener('input', updateRectangle);
+    document.getElementById('rectStrokeRange').addEventListener('input', updateRectangle);
+    document.getElementById('rectScaleRange').addEventListener('input', updateRectangle);
+
+    document.getElementById('circleRadiusRange').addEventListener('input', updateCircle);
+    document.getElementById('circleStrokeRange').addEventListener('input', updateCircle);
+    document.getElementById('circleScaleRange').addEventListener('input', updateCircle);
+
+    document.getElementById('triangleSideRange').addEventListener('input', updateTriangle);
+    document.getElementById('triangleStrokeRange').addEventListener('input', updateTriangle);
+    document.getElementById('triangleScaleRange').addEventListener('input', updateTriangle);
+  </script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Konva.js Shape Adjustments</title>
+  <script src="https://unpkg.com/konva@7.2.3/konva.min.js"></script>
+</head>
+<body>
+  <h1>Konva.js Shape Adjustments</h1>
+
+  <label>Select Shape:</label>
+  <select id="shapeSelect">
+    <option value="rect">Rectangle</option>
+    <option value="circle">Circle</option>
+    <option value="square">Square</option>
+    <option value="star">Star</option>
+    <option value="pentagon">Pentagon</option>
+    <option value="hexagon">Hexagon</option>
+  </select>
+
+  <h2>Shape Settings</h2>
+  <label>Size:</label>
+  <input type="range" id="sizeRange" min="10" max="300" value="100">
+  <span id="sizeValue">100</span>
+
+  <br>
+
+  <label>Stroke:</label>
+  <input type="range" id="strokeRange" min="1" max="10" value="2">
+  <span id="strokeValue">2</span>
+
+  <br>
+
+  <label>Scale:</label>
+  <input type="range" id="scaleRange" min="0.1" max="2" step="0.1" value="1">
+  <span id="scaleValue">1</span>
+
+  <br>
+
+  <div id="container"></div>
+
+  <script>
+    const stage = new Konva.Stage({
+      container: 'container',
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+
+    const layer = new Konva.Layer();
+    stage.add(layer);
+
+    let selectedShape;
+
+    function createShape(type, x, y) {
+      switch (type) {
+        case 'rect':
+          return new Konva.Rect({
+            x: x,
+            y: y,
+            width: 100,
+            height: 50,
+            stroke: 'black',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'circle':
+          return new Konva.Circle({
+            x: x,
+            y: y,
+            radius: 50,
+            stroke: 'black',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'square':
+          return new Konva.Rect({
+            x: x,
+            y: y,
+            width: 100,
+            height: 100,
+            stroke: 'black',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'star':
+          return new Konva.Star({
+            x: x,
+            y: y,
+            numPoints: 5,
+            innerRadius: 30,
+            outerRadius: 70,
+            stroke: 'black',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'pentagon':
+          return new Konva.RegularPolygon({
+            x: x,
+            y: y,
+            sides: 5,
+            radius: 50,
+            stroke: 'black',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'hexagon':
+          return new Konva.RegularPolygon({
+            x: x,
+            y: y,
+            sides: 6,
+            radius: 50,
+            stroke: 'black',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        default:
+          return null;
+      }
+    }
+
+    function updateShape() {
+      if (!selectedShape) return;
+
+      const size = parseInt(document.getElementById('sizeRange').value);
+      const stroke = parseInt(document.getElementById('strokeRange').value);
+      const scale = parseFloat(document.getElementById('scaleRange').value);
+
+      document.getElementById('sizeValue').innerText = size;
+      document.getElementById('strokeValue').innerText = stroke;
+      document.getElementById('scaleValue').innerText = scale;
+
+      if (selectedShape) {
+        selectedShape.width(size * scale);
+        selectedShape.height(size * scale);
+        if (selectedShape.radius) {
+          selectedShape.radius(size * scale);
+        }
+        selectedShape.strokeWidth(stroke);
+
+        layer.batchDraw();
+      }
+    }
+
+    document.getElementById('sizeRange').addEventListener('input', updateShape);
+    document.getElementById('strokeRange').addEventListener('input', updateShape);
+    document.getElementById('scaleRange').addEventListener('input', updateShape);
+
+    document.getElementById('shapeSelect').addEventListener('change', function() {
+      const shapeType = this.value;
+      const x = window.innerWidth / 2;
+      const y = window.innerHeight / 2;
+
+      // Remove existing shape
+      if (selectedShape) {
+        selectedShape.destroy();
+        selectedShape = null;
+      }
+
+      // Create and add new shape
+      selectedShape = createShape(shapeType, x, y);
+      if (selectedShape) {
+        layer.add(selectedShape);
+        stage.draw();
+        updateShape();
+      }
+    });
+  </script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Konva.js Shape Adjustments</title>
+  <script src="https://unpkg.com/konva@7.2.3/konva.min.js"></script>
+</head>
+<body>
+  <h1>Konva.js Shape Adjustments</h1>
+
+  <label>Select Shape:</label>
+  <select id="shapeSelect">
+    <option value="rect">Rectangle</option>
+    <option value="circle">Circle</option>
+    <option value="square">Square</option>
+    <option value="star">Star</option>
+    <option value="pentagon">Pentagon</option>
+    <option value="hexagon">Hexagon</option>
+  </select>
+
+  <h2>Shape Settings</h2>
+  <label>Size:</label>
+  <input type="range" id="sizeRange" min="10" max="300" value="100">
+  <span id="sizeValue">100</span>
+
+  <br>
+
+  <label>Fill Color:</label>
+  <input type="color" id="fillColorPicker" value="#ffffff">
+
+  <br>
+
+  <label>Stroke Color:</label>
+  <input type="color" id="strokeColorPicker" value="#000000">
+
+  <br>
+
+  <label>Stroke Width:</label>
+  <input type="range" id="strokeRange" min="1" max="10" value="2">
+  <span id="strokeValue">2</span>
+
+  <br>
+
+  <label>Scale:</label>
+  <input type="range" id="scaleRange" min="0.1" max="2" step="0.1" value="1">
+  <span id="scaleValue">1</span>
+
+  <br>
+
+  <div id="container"></div>
+
+  <script>
+    const stage = new Konva.Stage({
+      container: 'container',
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+
+    const layer = new Konva.Layer();
+    stage.add(layer);
+
+    let selectedShape;
+
+    function createShape(type, x, y) {
+      switch (type) {
+        case 'rect':
+          return new Konva.Rect({
+            x: x,
+            y: y,
+            width: 100,
+            height: 50,
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'circle':
+          return new Konva.Circle({
+            x: x,
+            y: y,
+            radius: 50,
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'square':
+          return new Konva.Rect({
+            x: x,
+            y: y,
+            width: 100,
+            height: 100,
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'star':
+          return new Konva.Star({
+            x: x,
+            y: y,
+            numPoints: 5,
+            innerRadius: 30,
+            outerRadius: 70,
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'pentagon':
+          return new Konva.RegularPolygon({
+            x: x,
+            y: y,
+            sides: 5,
+            radius: 50,
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        case 'hexagon':
+          return new Konva.RegularPolygon({
+            x: x,
+            y: y,
+            sides: 6,
+            radius: 50,
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 2,
+            draggable: true,
+          });
+        default:
+          return null;
+      }
+    }
+
+    function updateShape() {
+      if (!selectedShape) return;
+
+      const size = parseInt(document.getElementById('sizeRange').value);
+      const stroke = parseInt(document.getElementById('strokeRange').value);
+      const scale = parseFloat(document.getElementById('scaleRange').value);
+      const fillColor = document.getElementById('fillColorPicker').value;
+      const strokeColor = document.getElementById('strokeColorPicker').value;
+
+      document.getElementById('sizeValue').innerText = size;
+      document.getElementById('strokeValue').innerText = stroke;
+      document.getElementById('scaleValue').innerText = scale;
+
+      if (selectedShape) {
+        selectedShape.width(size * scale);
+        selectedShape.height(size * scale);
+        if (selectedShape.radius) {
+          selectedShape.radius(size * scale);
+        }
+        selectedShape.strokeWidth(stroke);
+        selectedShape.fill(fillColor);
+        selectedShape.stroke(strokeColor);
+
+        layer.batchDraw();
+      }
+    }
+
+    document.getElementById('sizeRange').addEventListener('input', updateShape);
+    document.getElementById('strokeRange').addEventListener('input', updateShape);
+    document.getElementById('scaleRange').addEventListener('input', updateShape);
+    document.getElementById('fillColorPicker').addEventListener('input', updateShape);
+    document.getElementById('strokeColorPicker').addEventListener('input', updateShape);
+
+    document.getElementById('shapeSelect').addEventListener('change', function() {
+      const shapeType = this.value;
+      const x = window.innerWidth / 2;
+      const y = window.innerHeight / 2;
+
+      // Remove existing shape
+      if (selectedShape) {
+        selectedShape.destroy();
+        selectedShape = null;
+      }
+
+      // Create and add new shape
+      selectedShape = createShape(shapeType, x, y);
+      if (selectedShape) {
+        layer.add(selectedShape);
+        stage.draw();
+        updateShape();
+      }
+    });
+  </script>
+</body>
+</html>
